@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="https://jakarta.ee/xml/ns/jakartaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee
+                             https://jakarta.ee/xml/ns/jakartaee/web-app_5_0.xsd"
+         version="5.0">
+
+    <display-name>FocusUp - Módulo de Usuarios Web</display-name>
+
+    <!-- ── Servlet: Login ── -->
+    <servlet>
+        <servlet-name>LoginServlet</servlet-name>
+        <servlet-class>com.focusup.servlet.LoginServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>LoginServlet</servlet-name>
+        <url-pattern>/login</url-pattern>
+    </servlet-mapping>
+
+    <!-- ── Servlet: Logout ── -->
+    <servlet>
+        <servlet-name>LogoutServlet</servlet-name>
+        <servlet-class>com.focusup.servlet.LogoutServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>LogoutServlet</servlet-name>
+        <url-pattern>/logout</url-pattern>
+    </servlet-mapping>
+
+    <!-- ── Servlet: Usuarios (CRUD completo) ── -->
+    <servlet>
+        <servlet-name>UsuarioServlet</servlet-name>
+        <servlet-class>com.focusup.servlet.UsuarioServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>UsuarioServlet</servlet-name>
+        <url-pattern>/usuarios</url-pattern>
+    </servlet-mapping>
+
+    <!-- ── Servlet: Registro de nuevo usuario ── -->
+    <servlet>
+        <servlet-name>RegistroServlet</servlet-name>
+        <servlet-class>com.focusup.servlet.RegistroServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>RegistroServlet</servlet-name>
+        <url-pattern>/registro</url-pattern>
+    </servlet-mapping>
+
+    <!-- Sesión: 30 minutos de inactividad y cookie no accesible desde JavaScript -->
+    <session-config>
+        <session-timeout>30</session-timeout>
+        <cookie-config>
+            <http-only>true</http-only>
+        </cookie-config>
+    </session-config>
+
+    <!-- Página de bienvenida -->
+    <welcome-file-list>
+        <welcome-file>index.jsp</welcome-file>
+    </welcome-file-list>
+
+    <!-- Manejo de errores -->
+    <error-page>
+        <error-code>404</error-code>
+        <location>/WEB-INF/jsp/error.jsp</location>
+    </error-page>
+    <error-page>
+        <error-code>500</error-code>
+        <location>/WEB-INF/jsp/error.jsp</location>
+    </error-page>
+
+</web-app>

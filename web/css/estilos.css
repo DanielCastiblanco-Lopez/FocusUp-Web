@@ -1,0 +1,101 @@
+/* =====================================================
+   FocusUp — Estilos Web
+   Evidencia GA7-220501096-AA2-EV02
+   ===================================================== */
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #F4F6F7;
+    color: #2C3E50;
+    font-size: 15px;
+    line-height: 1.6;
+}
+
+/* ── Topbar ── */
+.topbar {
+    background: #2C3E50;
+    padding: 14px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 2px 8px rgba(0,0,0,.15);
+}
+.topbar .brand  { color: #18BC9C; font-size: 1.4rem; font-weight: 700; letter-spacing: .03em; text-decoration: none; }
+.topbar nav a   { color: #BDC3C7; text-decoration: none; margin-left: 24px; font-size: .9rem; }
+.topbar nav a:hover { color: #18BC9C; }
+
+/* ── Contenedor principal ── */
+.container {
+    max-width: 960px;
+    margin: 32px auto;
+    padding: 0 20px;
+}
+
+/* ── Tarjetas ── */
+.card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 28px 32px;
+    box-shadow: 0 4px 16px rgba(0,0,0,.08);
+    margin-bottom: 24px;
+}
+.card h2 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #2C3E50;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #18BC9C;
+}
+
+/* ── Formularios ── */
+.form-group        { margin-bottom: 16px; }
+.form-group label  { display: block; font-size: .8rem; font-weight: 600; color: #7F8C8D; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 5px; }
+.form-group input,
+.form-group select { width: 100%; padding: 11px 14px; border: 1.5px solid #E8ECEF; border-radius: 10px; font-size: .93rem; color: #2C3E50; outline: none; transition: border-color .2s; }
+.form-group input:focus,
+.form-group select:focus { border-color: #18BC9C; box-shadow: 0 0 0 3px rgba(24,188,156,.1); }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+/* ── Botones ── */
+.btn { display: inline-block; padding: 11px 26px; border-radius: 10px; font-size: .92rem; font-weight: 600; border: none; cursor: pointer; text-decoration: none; transition: all .2s; }
+.btn-primary  { background: #18BC9C; color: #fff; }
+.btn-primary:hover  { background: #13a085; }
+.btn-secondary { background: #ECF0F1; color: #2C3E50; }
+.btn-secondary:hover { background: #D5DBDB; }
+.btn-danger   { background: #E74C3C; color: #fff; }
+.btn-danger:hover { background: #c0392b; }
+.btn-sm       { padding: 6px 14px; font-size: .8rem; }
+
+/* ── Tabla ── */
+.table-wrapper { overflow-x: auto; }
+table          { width: 100%; border-collapse: collapse; }
+thead tr       { background: #2C3E50; color: #fff; }
+th, td         { padding: 12px 16px; text-align: left; font-size: .88rem; }
+tbody tr:nth-child(even) { background: #F8F9FA; }
+tbody tr:hover { background: rgba(24,188,156,.06); }
+td .btn        { margin-right: 4px; }
+
+/* ── Alertas ── */
+.alert { padding: 12px 18px; border-radius: 10px; margin-bottom: 18px; font-size: .88rem; font-weight: 500; }
+.alert-success { background: rgba(39,174,96,.12);  border-left: 4px solid #27AE60; color: #1e8449; }
+.alert-error   { background: rgba(231,76,60,.10);  border-left: 4px solid #E74C3C; color: #922b21; }
+.alert-info    { background: rgba(24,188,156,.10); border-left: 4px solid #18BC9C; color: #0e6655; }
+
+/* ── Login ── */
+.login-wrap    { max-width: 400px; margin: 60px auto; }
+.login-brand   { text-align: center; margin-bottom: 28px; }
+.login-brand h1 { font-size: 2rem; color: #18BC9C; font-weight: 700; }
+.login-brand p  { color: #7F8C8D; font-size: .88rem; margin-top: 4px; }
+
+/* ── Footer ── */
+footer { text-align: center; color: #7F8C8D; font-size: .78rem; padding: 24px; margin-top: 40px; }
+
+/* ── Responsive ── */
+@media (max-width: 600px) {
+    .form-row { grid-template-columns: 1fr; }
+    .topbar   { flex-direction: column; gap: 10px; }
+    .card     { padding: 20px 16px; }
+}

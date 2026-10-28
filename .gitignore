@@ -1,0 +1,9 @@
+# NetBeans / Ant
+/build/
+/dist/
+/nbproject/private/
+# Compilados e IDE
+*.class
+*.war
+.idea/
+*.iml
