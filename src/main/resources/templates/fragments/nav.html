@@ -2,26 +2,42 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <body>
 
-<!-- Barra superior para usuarios con sesión iniciada. "Usuarios" solo se muestra a administradores
-     (es solo comodidad: el servidor igual exige el rol ADMIN en /usuarios). -->
+<!-- Barra superior para usuarios con sesión iniciada: marca | menú | usuario.
+     "Usuarios" solo se muestra a administradores (es solo comodidad: el servidor
+     igual exige el rol ADMIN en /usuarios). El enlace de la página actual se
+     resalta con el pequeño script del final. -->
 <header th:fragment="nav" class="topbar">
-    <a th:href="@{/tareas}" class="brand">FocusUp</a>
-    <nav>
+    <a th:href="@{/inicio}" class="brand">FocusUp</a>
+
+    <nav class="menu">
         <a th:href="@{/inicio}">Inicio</a>
         <a th:href="@{/tareas}">Tareas</a>
         <a th:href="@{/pomodoro}">Pomodoro</a>
         <a th:href="@{/estadisticas}">Estadísticas</a>
         <a th:href="@{/cuenta}">Mi cuenta</a>
         <a th:if="${usuarioActual != null and usuarioActual.esAdmin()}" th:href="@{/usuarios}">Usuarios</a>
-        <span class="user-chip" th:if="${usuarioActual != null}">
-            <span th:text="${usuarioActual.nombreCompleto}">Nombre</span>
-            <span class="badge badge-rol" th:text="${usuarioActual.rol.etiqueta}">Rol</span>
-        </span>
-        <form th:action="@{/logout}" method="post" class="inline-form">
-            <input type="hidden" name="_csrf" th:value="${csrf}"/>
-            <button type="submit" class="btn btn-secondary btn-sm">Salir</button>
-        </form>
     </nav>
+
+    <div class="usuario" th:if="${usuarioActual != null}">
+        <span class="avatar" th:text="${#strings.toUpperCase(#strings.substring(usuarioActual.nombres,0,1))}">U</span>
+        <span class="usuario-datos" th:title="${usuarioActual.nombreCompleto}">
+            <span class="usuario-nombre" th:text="${usuarioActual.nombres}">Nombre</span>
+            <span class="usuario-rol" th:text="${usuarioActual.rol.etiqueta}">Rol</span>
+        </span>
+        <form th:action="@{/logout}" method="post" class="form-salir">
+            <input type="hidden" name="_csrf" th:value="${csrf}"/>
+            <button type="submit" class="btn-salir">Salir</button>
+        </form>
+    </div>
+
+    <script>
+        (function () {
+            var ruta = location.pathname;
+            document.querySelectorAll('.topbar .menu a').forEach(function (a) {
+                if (ruta.indexOf(new URL(a.href).pathname) === 0) { a.classList.add('activo'); }
+            });
+        })();
+    </script>
 </header>
 
 </body>
