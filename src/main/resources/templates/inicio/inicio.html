@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>FocusUp — Inicio</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}"/>
+</head>
+<body>
+
+<header th:replace="~{fragments/nav :: nav}"></header>
+
+<div class="container">
+    <h1 class="saludo">Hola, <span th:text="${usuarioActual.nombres}">Usuario</span> 👋</h1>
+
+    <div class="stats-row">
+        <div class="stat-card">
+            <div class="stat-num" style="color:#F39C12;" th:text="${resumen.pendientes()}">0</div>
+            <div class="stat-label">Tareas pendientes</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-num" th:text="${resumen.minutosHoy()}">0</div>
+            <div class="stat-label">Minutos de enfoque hoy</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-num" th:text="${resumen.racha()}">0</div>
+            <div class="stat-label">🔥 Racha (días)</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header"><h2>Próxima tarea</h2>
+            <a th:href="@{/pomodoro}" class="btn btn-primary btn-sm">▶ Iniciar Pomodoro</a></div>
+        <div th:if="${resumen.proximaTarea() == null}" class="aviso">
+            No tienes tareas pendientes con fecha límite. <a th:href="@{/tareas/nueva}">Crear una tarea</a>
+        </div>
+        <div th:if="${resumen.proximaTarea() != null}">
+            <strong th:text="${resumen.proximaTarea().titulo}">Título</strong>
+            <span class="badge" th:text="${resumen.proximaTarea().prioridad}"
+                  th:classappend="${resumen.proximaTarea().prioridad == 'Alta'} ? 'badge-alta' :
+                                  (${resumen.proximaTarea().prioridad == 'Baja'} ? 'badge-baja' : 'badge-media')"></span>
+            <div class="aviso">Fecha límite:
+                <span th:text="${#temporals.format(resumen.proximaTarea().fechaLimite,'dd/MM/yyyy')}"></span></div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header"><h2>Esta semana</h2></div>
+        <div class="semana">
+            <div th:each="d : ${resumen.semana()}" class="dia" th:classappend="${d.hoy()} ? 'hoy'">
+                <div class="dia-nombre" th:text="${d.etiqueta()}">Lun</div>
+                <div class="dia-num" th:text="${#temporals.format(d.fecha(),'dd')}">01</div>
+                <div class="dia-tareas" th:text="${d.tareas() > 0} ? ${d.tareas()} + ' 📌' : ''"></div>
+            </div>
+        </div>
+        <p class="aviso">📌 = tareas con fecha límite ese día.</p>
+    </div>
+</div>
+
+<footer>FocusUp © 2026 | Daniel Castiblanco</footer>
+</body>
+</html>

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>FocusUp — Pomodoro</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}"/>
+</head>
+<body>
+
+<header th:replace="~{fragments/nav :: nav}"></header>
+
+<div class="container">
+    <div class="card pomodoro" id="pomodoro" th:attr="data-url=@{/pomodoro/sesiones},data-csrf=${csrf}">
+        <div class="card-header"><h2>Pomodoro</h2></div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="tarea">Tarea (opcional)</label>
+                <select id="tarea">
+                    <option value="">Sesión libre</option>
+                    <option th:each="t : ${pendientes}" th:value="${t.id}" th:text="${t.titulo}"></option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="minutos">Duración (minutos)</label>
+                <input type="number" id="minutos" value="25" min="1" max="180"/>
+            </div>
+        </div>
+
+        <div class="reloj" id="reloj" aria-live="polite">25:00</div>
+        <div class="acciones-reloj">
+            <button type="button" class="btn btn-primary" id="btnIniciar">▶ Iniciar</button>
+            <button type="button" class="btn btn-secondary" id="btnReiniciar">↺ Reiniciar</button>
+        </div>
+        <p class="aviso" id="mensaje"></p>
+    </div>
+
+    <div class="card">
+        <div class="card-header"><h2>Últimas sesiones</h2></div>
+        <p class="aviso" th:if="${ultimas.empty}">Aún no has completado sesiones.</p>
+        <div class="table-wrapper" th:unless="${ultimas.empty}">
+            <table>
+                <thead><tr><th>Tarea</th><th>Minutos</th><th>Fecha</th></tr></thead>
+                <tbody>
+                <tr th:each="s : ${ultimas}">
+                    <td th:text="${s.nombreTarea}">Tarea</td>
+                    <td th:text="${s.minutos}">25</td>
+                    <td th:text="${#temporals.format(s.fechaHora,'dd/MM/yyyy HH:mm')}">fecha</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <p class="aviso" th:unless="${ultimas.empty}">Los cambios se ven al recargar la página.</p>
+    </div>
+</div>
+
+<script>
+(function () {
+    var cont = document.getElementById('pomodoro');
+    var reloj = document.getElementById('reloj');
+    var btn = document.getElementById('btnIniciar');
+    var inputMin = document.getElementById('minutos');
+    var msg = document.getElementById('mensaje');
+    var restante = 0, minutosSesion = 0, fin = 0, tick = null, estado = 'quieto'; // quieto | corriendo | pausado
+
+    function pintar(seg) {
+        var m = Math.floor(seg / 60), s = seg % 60;
+        reloj.textContent = (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+        document.title = (estado === 'corriendo' ? reloj.textContent + ' · ' : '') + 'FocusUp — Pomodoro';
+    }
+    function minutosValidos() {
+        var v = parseInt(inputMin.value, 10);
+        return (v >= 1 && v <= 180) ? v : null;
+    }
+    function iniciar() {
+        if (estado === 'quieto') {
+            var m = minutosValidos();
+            if (m === null) { msg.textContent = 'Escribe una duración entre 1 y 180 minutos.'; return; }
+            minutosSesion = m; restante = m * 60; msg.textContent = '';
+        }
+        // Se calcula con la hora de fin (no restando 1 por tick) para no atrasarse si la pestaña queda en segundo plano.
+        fin = Date.now() + restante * 1000;
+        estado = 'corriendo'; btn.textContent = '⏸ Pausar';
+        inputMin.disabled = true; document.getElementById('tarea').disabled = true;
+        tick = setInterval(function () {
+            restante = Math.max(0, Math.round((fin - Date.now()) / 1000));
+            pintar(restante);
+            if (restante === 0) terminar();
+        }, 250);
+    }
+    function pausar() {
+        clearInterval(tick); estado = 'pausado'; btn.textContent = '▶ Reanudar';
+    }
+    function reiniciar() {
+        clearInterval(tick); estado = 'quieto'; btn.textContent = '▶ Iniciar';
+        inputMin.disabled = false; document.getElementById('tarea').disabled = false;
+        var m = minutosValidos() || 25; pintar(m * 60); msg.textContent = '';
+    }
+    function terminar() {
+        clearInterval(tick);
+        var cuerpo = new URLSearchParams();
+        cuerpo.append('_csrf', cont.dataset.csrf);
+        cuerpo.append('minutos', minutosSesion);
+        var tarea = document.getElementById('tarea').value;
+        if (tarea) cuerpo.append('tareaId', tarea);
+        fetch(cont.dataset.url, { method: 'POST', body: cuerpo, credentials: 'same-origin' })
+            .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
+            .then(function (x) {
+                msg.textContent = x.ok ? '✅ ¡Sesión completada y guardada! (' + x.j.minutos + ' min)'
+                                       : '⚠️ No se pudo guardar: ' + (x.j.error || 'error');
+            })
+            .catch(function () { msg.textContent = '⚠️ No se pudo guardar la sesión (sin conexión o sesión vencida).'; })
+            .finally(function () { reiniciar(); });
+    }
+    btn.addEventListener('click', function () { estado === 'corriendo' ? pausar() : iniciar(); });
+    document.getElementById('btnReiniciar').addEventListener('click', reiniciar);
+    inputMin.addEventListener('input', function () {
+        if (estado === 'quieto') { var m = minutosValidos(); if (m) pintar(m * 60); }
+    });
+})();
+</script>
+
+<footer>FocusUp © 2026 | Daniel Castiblanco</footer>
+</body>
+</html>

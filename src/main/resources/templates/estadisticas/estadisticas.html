@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>FocusUp — Estadísticas</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}"/>
+</head>
+<body>
+
+<header th:replace="~{fragments/nav :: nav}"></header>
+
+<div class="container">
+    <div class="card">
+        <div class="card-header"><h2>Tu progreso • <span th:text="${r.periodo().etiqueta()}">Semana</span></h2></div>
+        <div class="filter-bar">
+            <a th:href="@{/estadisticas(periodo='semana')}" th:classappend="${periodoActual == 'semana'} ? 'active'" class="filter-btn">Semana</a>
+            <a th:href="@{/estadisticas(periodo='mes')}" th:classappend="${periodoActual == 'mes'} ? 'active'" class="filter-btn">Mes</a>
+            <a th:href="@{/estadisticas(periodo='total')}" th:classappend="${periodoActual == 'total'} ? 'active'" class="filter-btn">Total</a>
+        </div>
+        <div class="stats-row">
+            <div class="stat-card"><div class="stat-num" th:text="${r.tareasCompletadas()}">0</div><div class="stat-label">Tareas completadas</div></div>
+            <div class="stat-card"><div class="stat-num" th:text="${r.minutos()}">0</div><div class="stat-label">Minutos de enfoque</div></div>
+            <div class="stat-card"><div class="stat-num" th:text="${r.sesiones()}">0</div><div class="stat-label">Sesiones</div></div>
+        </div>
+        <div class="stats-row" style="grid-template-columns:repeat(2,1fr);margin-bottom:0;">
+            <div class="stat-card"><div class="stat-num" th:text="${r.rachaActual()}">0</div><div class="stat-label">🔥 Racha actual (días)</div></div>
+            <div class="stat-card"><div class="stat-num" th:text="${r.rachaMaxima()}">0</div><div class="stat-label">🏆 Racha máxima (días)</div></div>
+        </div>
+    </div>
+
+    <div class="card" th:if="${periodoActual == 'semana'}">
+        <div class="card-header"><h2>Minutos por día (esta semana)</h2></div>
+        <div class="grafico">
+            <div th:each="b : ${r.barras()}" class="col">
+                <div class="valor" th:text="${b.minutos() > 0} ? ${b.minutos()} : ''"></div>
+                <div class="barra" th:classappend="${b.hoy()} ? 'hoy'" th:style="'height:' + ${b.alturaPorcentaje()} + 'px'"></div>
+                <div class="etiqueta" th:classappend="${b.hoy()} ? 'hoy'" th:text="${b.etiqueta()}">Lun</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card" th:if="${r.total() != null}">
+        <div class="card-header"><h2>Resumen total</h2></div>
+        <p class="aviso" th:if="${r.total().usandoDesde() != null}">Usando FocusUp desde el
+            <span th:text="${#temporals.format(r.total().usandoDesde(),'dd/MM/yyyy')}">fecha</span></p>
+        <div class="stats-row">
+            <div class="stat-card"><div class="stat-num" th:text="${r.total().diasEstudiados()}">0</div><div class="stat-label">Días estudiados</div></div>
+            <div class="stat-card"><div class="stat-num" th:text="${r.total().promedioDiario()} + ' min'">0</div><div class="stat-label">Promedio por día</div></div>
+            <div class="stat-card"><div class="stat-num" th:text="${r.total().mejorSemana()} + ' min'">0</div><div class="stat-label">Mejor semana</div></div>
+        </div>
+        <div class="stat-card" style="max-width:300px;"><div class="stat-num" th:text="${r.total().recordDia()} + ' min'">0</div><div class="stat-label">Récord en un día</div></div>
+    </div>
+
+    <div class="card">
+        <div class="card-header"><h2>Últimas sesiones</h2></div>
+        <p class="aviso" th:if="${r.ultimasSesiones().empty}">Sin sesiones en este periodo.</p>
+        <div class="table-wrapper" th:unless="${r.ultimasSesiones().empty}">
+            <table>
+                <thead><tr><th>Tarea</th><th>Minutos</th><th>Fecha</th></tr></thead>
+                <tbody>
+                <tr th:each="s : ${r.ultimasSesiones()}">
+                    <td th:text="${s.nombreTarea}">Tarea</td>
+                    <td th:text="${s.minutos}">25</td>
+                    <td th:text="${#temporals.format(s.fechaHora,'dd/MM/yyyy HH:mm')}">fecha</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<footer>FocusUp © 2026 | Daniel Castiblanco</footer>
+</body>
+</html>
